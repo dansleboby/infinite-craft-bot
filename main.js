@@ -39,34 +39,43 @@ if (process.env.NEO4J_URI) {
 }
 
 let runCounter = 0;
+let openaiCalls = 0;
+const openaiLimit = parseInt(process.env.OPENAI_MAX_CALLS || '0');
+const openaiModel = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
 
 async function search(s1, s2) {
-    const response = await fetch(`https://neal.fun/api/infinite-craft/pair?first=${s1}&second=${s2}`, {
+    if (!process.env.OPENAI_API_KEY) {
+        throw new Error('OPENAI_API_KEY is not configured');
+    }
+    if (openaiLimit && openaiCalls >= openaiLimit) {
+        throw new Error('OpenAI call limit reached');
+    }
+    openaiCalls++;
+
+    const prompt = `Reply with a JSON object like {"result":"word","emoji":""} representing the combination of ${s1} and ${s2}.`;
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
         headers: {
-            Referer: "https://neal.fun/infinite-craft/",
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
         },
+        body: JSON.stringify({
+            model: openaiModel,
+            messages: [{ role: 'user', content: prompt }]
+        })
     });
 
-    /* Old code to throw error immediately
     if (!response.ok) {
-        if (response.status === 429) throw new Error(`429: Too many requests. Retry after ${response.headers.get('Retry-After')}s.`);
-        else throw new Error(`Fetch failed with status ${response.status}`)
-    }
-    */
-
-    // New code to retry after the Retry After limit
-    if (!response.ok) {
-        if (response.status === 429) {
-            let retryTime = response.headers.get('Retry-After');
-            console.error(`429: Too many requests. Retrying after ${+retryTime + 5}s.`); // +5s for safety
-            await timeout(retryTime * 1000 + 5000);
-            return search(s1, s2);
-        }
-        else throw new Error(`Fetch failed with status ${response.status}`)
+        throw new Error(`OpenAI error ${response.status}`);
     }
 
-    const foundObject = await response.json();
-    return foundObject;
+    const data = await response.json();
+    let text = data.choices && data.choices[0] && data.choices[0].message.content;
+    try {
+        return JSON.parse(text);
+    } catch {
+        return { result: text.trim(), emoji: '' };
+    }
 }
 
 function weightedRNG(weights) {
@@ -156,6 +165,8 @@ async function run() {
             timesDupe: 0,
             recipes: [recipe]
         });
+
+        console.log(`Discovered ${recipe[0]} + ${recipe[1]} => ${product}`);
 
         items[randomItems[0]].timesIngredient += 1;
         items[randomItems[1]].timesIngredient += 1;

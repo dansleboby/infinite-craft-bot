@@ -41,3 +41,17 @@ If you want to log recipes in a Neo4j graph database, copy `.env.example` to
 `NEO4J_USER` and `NEO4J_PASSWORD` are set, each new recipe discovered by the bot
 is also written to the configured Neo4j database. This allows for more advanced
 graph based visualisations.
+
+### Using OpenAI for combinations
+To generate new item names without using the game's API, the bot can call
+OpenAI's chat completion endpoint. Copy `.env.example` to `.env` and add your
+`OPENAI_API_KEY`. You can also override the model and set a limit on how many
+requests will be made:
+
+```
+OPENAI_MODEL=gpt-3.5-turbo
+OPENAI_MAX_CALLS=1000
+```
+
+When enabled, each discovered combination is printed to the console in the form
+`ItemA + ItemB => Result`.
