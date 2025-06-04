@@ -2,13 +2,19 @@
     "name": "infinite-craft-bot",
     "version": "1.0.0",
     "description": "",
-    "main": "main.js",
+    "main": "cli.js",
     "scripts": {
-        "bot": "echo '---BOT START---' >> main.log & node . 2>&1 | tee -a main.log",
-        "reset": "echo '---RESETTED RECIPES.JSON---' >> main.log & node reset.js",
+        "start": "node cli.js",
+        "bot": "node main.js",
+        "reset": "node reset.js",
         "visualize": "node visualize.js"
     },
     "keywords": [],
     "author": "",
-    "license": "ISC"
+    "license": "ISC",
+    "dependencies": {
+        "inquirer": "^8.2.0",
+        "neo4j-driver": "^5.8.0",
+        "yargs": "^18.0.0"
+    }
 }

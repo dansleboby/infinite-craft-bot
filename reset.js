@@ -1,9 +1,12 @@
 const fs = require('fs');
+const path = require('path');
 
-let resetRecipe = fs.readFileSync('./data/RESET_RECIPE.json');
-fs.writeFileSync('./data/recipes.json', resetRecipe);
+const dataDir = path.join(__dirname, 'data');
 
-fs.writeFileSync('./data/failed_recipes.json', '[]');
+let resetRecipe = fs.readFileSync(path.join(dataDir, 'RESET_RECIPE.json'));
+fs.writeFileSync(path.join(dataDir, 'recipes.json'), resetRecipe);
 
-if (process.argv.length > 2) 
-    fs.appendFileSync('main.log', 'Reason: ' + process.argv.slice(2).join(' ') + '\n');
+fs.writeFileSync(path.join(dataDir, 'failed_recipes.json'), '[]');
+
+if (process.argv.length > 2)
+    fs.appendFileSync(path.join(__dirname, 'main.log'), 'Reason: ' + process.argv.slice(2).join(' ') + '\n');

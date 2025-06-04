@@ -1,10 +1,55 @@
 const fs = require('fs');
+const path = require('path');
+const yargs = require('yargs/yargs');
+const { hideBin } = require('yargs/helpers');
+const neo4j = require('neo4j-driver');
 
-let items = JSON.parse(fs.readFileSync('./data/recipes.json'));
-let failedRecipes = JSON.parse(fs.readFileSync('./data/failed_recipes.json'));
+const configPath = path.join(__dirname, 'config.json');
+let config = { delay: 300, saveInterval: 10 };
+try {
+  Object.assign(config, JSON.parse(fs.readFileSync(configPath)));
+} catch {}
 
-const timeDelay = 300; // in ms, time per recipe, to avoid 429 too many requests
+const argv = yargs(hideBin(process.argv))
+  .option('runs', {
+    describe: 'Number of recipes to attempt',
+    type: 'number',
+    default: Infinity,
+  })
+  .option('delay', {
+    describe: 'Delay between API calls in ms',
+    type: 'number',
+    default: config.delay,
+  })
+  .option('saveInterval', {
+    describe: 'How many new items between saving data',
+    type: 'number',
+    default: config.saveInterval,
+  })
+  .help()
+  .argv;
+
+const dataDir = path.join(__dirname, 'data');
+
+let items = JSON.parse(fs.readFileSync(path.join(dataDir, 'recipes.json')));
+let failedRecipes = JSON.parse(fs.readFileSync(path.join(dataDir, 'failed_recipes.json')));
+
+const timeDelay = argv.delay; // in ms, wait between API calls
+const saveInterval = argv.saveInterval;
 const timeout = async t => new Promise(r => setTimeout(r, t));
+
+let graphDriver;
+if (process.env.NEO4J_URI) {
+  graphDriver = neo4j.driver(
+    process.env.NEO4J_URI,
+    neo4j.auth.basic(
+      process.env.NEO4J_USER || '',
+      process.env.NEO4J_PASSWORD || ''
+    )
+  );
+}
+
+let runCounter = 0;
 
 async function search(s1, s2) {
     const response = await fetch(`https://neal.fun/api/infinite-craft/pair?first=${s1}&second=${s2}`, {
@@ -77,8 +122,22 @@ function selectItems() {
 }
 
 function compareRecipes(recipe1, recipe2) {
-    return (recipe1[0] === recipe2[0] && recipe1[1] === recipe2[1]) 
+    return (recipe1[0] === recipe2[0] && recipe1[1] === recipe2[1])
         || (recipe1[0] === recipe2[1] && recipe1[1] === recipe2[0])
+}
+
+async function logToGraph(recipe, product) {
+    if (!graphDriver) return;
+    const session = graphDriver.session();
+    try {
+        await session.executeWrite(tx => tx.run(
+            'MERGE (a:Item {name:$a}) MERGE (b:Item {name:$b}) MERGE (c:Item {name:$c}) ' +
+            'MERGE (a)-[:COMBINES_WITH {other:$b}]->(c) MERGE (b)-[:COMBINES_WITH {other:$a}]->(c)',
+            { a: recipe[0], b: recipe[1], c: product }
+        ));
+    } finally {
+        await session.close();
+    }
 }
 
 async function run() {
@@ -112,18 +171,30 @@ async function run() {
         items[randomItems[0]].timesIngredient += 1;
         items[randomItems[1]].timesIngredient += 1;
 
-        if (items.length % 10 === 0) { // change 10 to something more if less logging (not debug)
-            fs.writeFileSync('./data/recipes.json', JSON.stringify(items, null, 4));
-            fs.writeFileSync('./data/failed_recipes.json', JSON.stringify(failedRecipes, null, 4));
+        if (items.length % saveInterval === 0) {
+            fs.writeFileSync(path.join(dataDir, 'recipes.json'), JSON.stringify(items, null, 4));
+            fs.writeFileSync(path.join(dataDir, 'failed_recipes.json'), JSON.stringify(failedRecipes, null, 4));
             console.log(`Wrote items list of length ${items.length} to recipes.json!`);
         }
+        await logToGraph(recipe, product);
+    }
+
+    runCounter++;
+    if (runCounter >= argv.runs) {
+        if (graphDriver) await graphDriver.close();
+        fs.writeFileSync(path.join(dataDir, 'recipes.json'), JSON.stringify(items, null, 4));
+        fs.writeFileSync(path.join(dataDir, 'failed_recipes.json'), JSON.stringify(failedRecipes, null, 4));
+        return;
     }
 
     await timeout(timeDelay);
     await run();
 }
 
-run();
+run().catch(async err => {
+    console.error(err);
+    if (graphDriver) await graphDriver.close();
+});
 
 /*
 function onlyUnique(v, index, array) {
