@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const yargs = require('yargs/yargs');
-const { hideBin } = require('yargs/helpers');
+const minimist = require('minimist');
 const neo4j = require('neo4j-driver');
 
 const configPath = path.join(__dirname, 'config.json');
@@ -10,24 +9,13 @@ try {
   Object.assign(config, JSON.parse(fs.readFileSync(configPath)));
 } catch {}
 
-const argv = yargs(hideBin(process.argv))
-  .option('runs', {
-    describe: 'Number of recipes to attempt',
-    type: 'number',
-    default: Infinity,
-  })
-  .option('delay', {
-    describe: 'Delay between API calls in ms',
-    type: 'number',
-    default: config.delay,
-  })
-  .option('saveInterval', {
-    describe: 'How many new items between saving data',
-    type: 'number',
-    default: config.saveInterval,
-  })
-  .help()
-  .argv;
+const argv = minimist(process.argv.slice(2), {
+  default: {
+    runs: Infinity,
+    delay: config.delay,
+    saveInterval: config.saveInterval,
+  },
+});
 
 const dataDir = path.join(__dirname, 'data');
 

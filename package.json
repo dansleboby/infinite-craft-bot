@@ -15,6 +15,6 @@
     "dependencies": {
         "inquirer": "^8.2.0",
         "neo4j-driver": "^5.8.0",
-        "yargs": "^18.0.0"
+        "minimist": "^1.2.8"
     }
 }
