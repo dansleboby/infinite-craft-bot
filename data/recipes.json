@@ -1,34 +1,164 @@
 [
     {
-        "product": "Water",
+        "product": "Eau",
         "emoji": "💧",
         "recipes": [],
-        "timesIngredient": 0,
+        "timesIngredient": 2,
         "timesFail": 0,
         "timesDupe": 0
     },
     {
-        "product": "Fire",
+        "product": "Feu",
         "emoji": "🔥",
         "recipes": [],
-        "timesIngredient": 0,
+        "timesIngredient": 3,
         "timesFail": 0,
         "timesDupe": 0
     },
     {
-        "product": "Wind",
+        "product": "Vent",
         "emoji": "🌬️",
         "recipes": [],
-        "timesIngredient": 0,
+        "timesIngredient": 2,
         "timesFail": 0,
         "timesDupe": 0
     },
     {
-        "product": "Earth",
+        "product": "Terre",
         "emoji": "🌍",
         "recipes": [],
-        "timesIngredient": 0,
+        "timesIngredient": 5,
         "timesFail": 0,
         "timesDupe": 0
+    },
+    {
+        "product": "aérogéologie",
+        "emoji": "🌬️🌍",
+        "timesIngredient": 0,
+        "timesFail": 0,
+        "timesDupe": 0,
+        "recipes": [
+            [
+                "Terre",
+                "Vent"
+            ]
+        ]
+    },
+    {
+        "product": "vapeur",
+        "emoji": "💨",
+        "timesIngredient": 3,
+        "timesFail": 0,
+        "timesDupe": 0,
+        "recipes": [
+            [
+                "Eau",
+                "Feu"
+            ]
+        ]
+    },
+    {
+        "product": "solvif",
+        "emoji": "🌱💧",
+        "timesIngredient": 1,
+        "timesFail": 0,
+        "timesDupe": 0,
+        "recipes": [
+            [
+                "Terre",
+                "Eau"
+            ]
+        ]
+    },
+    {
+        "product": "agrosol",
+        "emoji": "🌱",
+        "timesIngredient": 1,
+        "timesFail": 0,
+        "timesDupe": 0,
+        "recipes": [
+            [
+                "solvif",
+                "Terre"
+            ]
+        ]
+    },
+    {
+        "product": "volcanique",
+        "emoji": "🌋",
+        "timesIngredient": 1,
+        "timesFail": 0,
+        "timesDupe": 0,
+        "recipes": [
+            [
+                "Terre",
+                "Feu"
+            ]
+        ]
+    },
+    {
+        "product": "géothermie",
+        "emoji": "🌍♨️",
+        "timesIngredient": 0,
+        "timesFail": 0,
+        "timesDupe": 0,
+        "recipes": [
+            [
+                "Terre",
+                "vapeur"
+            ]
+        ]
+    },
+    {
+        "product": "energie",
+        "emoji": "⚡",
+        "timesIngredient": 1,
+        "timesFail": 0,
+        "timesDupe": 0,
+        "recipes": [
+            [
+                "vapeur",
+                "Feu"
+            ]
+        ]
+    },
+    {
+        "product": "moteur thermique",
+        "emoji": "⚙️",
+        "timesIngredient": 0,
+        "timesFail": 0,
+        "timesDupe": 0,
+        "recipes": [
+            [
+                "vapeur",
+                "energie"
+            ]
+        ]
+    },
+    {
+        "product": "terre fertile",
+        "emoji": "🌋🌱",
+        "timesIngredient": 1,
+        "timesFail": 0,
+        "timesDupe": 0,
+        "recipes": [
+            [
+                "volcanique",
+                "agrosol"
+            ]
+        ]
+    },
+    {
+        "product": "éolienne",
+        "emoji": "🌬️",
+        "timesIngredient": 0,
+        "timesFail": 0,
+        "timesDupe": 0,
+        "recipes": [
+            [
+                "terre fertile",
+                "Vent"
+            ]
+        ]
     }
 ]

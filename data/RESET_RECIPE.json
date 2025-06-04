@@ -1,6 +1,6 @@
 [
     {
-        "product": "Water",
+        "product": "Eau",
         "emoji": "💧",
         "recipes": [],
         "timesIngredient": 0,
@@ -8,7 +8,7 @@
         "timesDupe": 0
     },
     {
-        "product": "Fire",
+        "product": "Feu",
         "emoji": "🔥",
         "recipes": [],
         "timesIngredient": 0,
@@ -16,7 +16,7 @@
         "timesDupe": 0
     },
     {
-        "product": "Wind",
+        "product": "Vent",
         "emoji": "🌬️",
         "recipes": [],
         "timesIngredient": 0,
@@ -24,7 +24,7 @@
         "timesDupe": 0
     },
     {
-        "product": "Earth",
+        "product": "Terre",
         "emoji": "🌍",
         "recipes": [],
         "timesIngredient": 0,
