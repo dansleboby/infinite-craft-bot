@@ -36,6 +36,8 @@ kept in `config.json`. You can edit this file manually or through the
 "Configure settings" option in the interactive menu.
 
 ### Optional Neo4j logging
-If the environment variables `NEO4J_URI`, `NEO4J_USER` and `NEO4J_PASSWORD` are
-set, each new recipe discovered by the bot is also written to the configured
-Neo4j database. This allows for more advanced graph based visualisations.
+If you want to log recipes in a Neo4j graph database, copy `.env.example` to
+`.env` and fill in your connection details. When the variables `NEO4J_URI`,
+`NEO4J_USER` and `NEO4J_PASSWORD` are set, each new recipe discovered by the bot
+is also written to the configured Neo4j database. This allows for more advanced
+graph based visualisations.

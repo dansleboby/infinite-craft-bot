@@ -2,6 +2,7 @@ const inquirer = require('inquirer');
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+require('dotenv').config();
 
 const configPath = path.join(__dirname, 'config.json');
 

@@ -6,3 +6,4 @@ data_dump
 main.log
 node_modules
 package-lock.json
+.env

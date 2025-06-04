@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const minimist = require('minimist');
 const neo4j = require('neo4j-driver');
+require('dotenv').config();
 
 const configPath = path.join(__dirname, 'config.json');
 let config = { delay: 300, saveInterval: 10 };
