@@ -1,14 +1,16 @@
 const fs = require('fs');
-let recipes = JSON.parse(fs.readFileSync('./data/recipes.json'));
-let returnArr = [];
-let rowItems = [];
-for (let recipe of recipes) {
-    if (rowItems.join('').length > 50) {
-        returnArr.push(rowItems.join(' | '));
-        rowItems = [];
-    } else {
-        rowItems.push(`${recipe.emoji.trim()} ${recipe.product.trim()}`);
-    }
+const path = require('path');
+
+const dataDir = path.join(__dirname, 'data');
+const recipes = JSON.parse(fs.readFileSync(path.join(dataDir, 'recipes.json')));
+
+let lines = ['digraph recipes {'];
+for (const item of recipes) {
+  for (const r of item.recipes || []) {
+    lines.push(`  "${r[0]}" -> "${item.product}" [label="+ ${r[1]}"];`);
+    lines.push(`  "${r[1]}" -> "${item.product}" [label="+ ${r[0]}"];`);
+  }
 }
-if (rowItems.length) returnArr.push(rowItems.join(' | '));
-console.log(returnArr.join('\n'));
+lines.push('}');
+
+console.log(lines.join('\n'));
